@@ -1,0 +1,5 @@
+rm -rf *~ */*~
+rm -f *.new.pcb *.net *.cmd *.bak
+rm -f localparts.py
+rm -rf new.pcb
+rm -rf *.bak?

@@ -1,2 +1,9 @@
 \..*\.swp
-hardware/output
+electronics/output
+firmware/obj
+firmware/.*\.elf
+firmware/.*\.map
+firmware/\.sconsign\.dblite
+firmware/scripts
+Sensirion/.*
+flow2/.*
