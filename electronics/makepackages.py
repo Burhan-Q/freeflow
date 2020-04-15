@@ -110,11 +110,16 @@ p.Info( pnum='DMN63D8LDW-7', mfg='Diodes Inc', dk='DMN63D8LDW-7CT-ND' )
 p.Print( 'packages/dual_fet' )
 
 # Gage pressure sensor.  Note that pins are numbered backward from normal
-#exit( "ERROR ERROR! Pin 1 dot is in wrong location!  Fix that!" )
 p = Part();
 p.InitFourSided( N=12, W=mm(5), L=mm(5), pitch=mm(1.27), pinW=mm(0.7), pinL=mm(0.65), rowD=mm(4.2), exact=True )
-for i in p.pins: 
-   i.X *= -1;
+
+# Reverse pin numbering
+for i in p.pins: i.X *= -1;
+
+# Add outline with the pin 1 dot is in the right place
+p.lines=[]
+p.AddOutline( H=mm(5), W=mm(5), type="BOX", mirror=True )
+
 pi = PinInfo( pinW=mm(1), exact=True )
 p.pins.append( Pin( n=-1, x=mm(2.05-4.2/2), y=mm(4.2/2-1.24), info=pi ) )
 p.Info( pnum='MPRLS0001PG0000SA', mfg='Honeywell', dk='480-7100-1-ND' );
@@ -185,8 +190,52 @@ p.Create( 6, W=mm(1.7), L=mm(3.1), pitch=mm(0.95), pinW=mm(0.5), pinL=mm(1.0), p
 p.Info( mfg='Nexperia', pnum='74HC2G14GV,125', dk='1727-6046-1-ND' );
 p.Print( "packages/74HC2G14" );
 
-# Mounting hole
+# Mounting hole.  Designed for M2 thread.
+# will screw into spacer such as Wurth 9774015243R
 c = Part( ref='' );
-pi = PinInfo( pinW=mil(125), exact=True, plated=False );
+pi = PinInfo( pinW=mm(2.1), exact=True, plated=False );
 c.pins.append( Pin(-1, 0, 0, pi ));
+c.AddOutline( mm(4), 0, "CIRCLE" )
 c.Print( "packages/mh" );
+
+# SMT test point
+#p = Part();
+#p.pins.append( Pad( 1, False, 0,  0, PadInfo( mm(1), mm(1), exact=True ), round=True, showname=False ) );
+#p.pins[0].flags.append( 'nopaste' );
+#p.Print( "packages/testpoint" );
+
+# Through hole test point
+p = Part();
+p.pins.append( Pin(1, 0, 0, PinInfo( mil(40), exact=True ), showname=False, square=False ));
+p.Info( mfg='Keystone', pnum='5001', dk='36-5001-ND' );
+p.Print( "packages/testpoint" );
+
+# Hirose 20 pin socket connector
+p = Header()
+p.Create( N=20, pinW=mm(.25), pinL=mm(1.1), rows=2, L=mm(7.6), W=mm(5), pitch=mm(.5), padExt=mm(6.6), exact=True, smt=True );
+p.Info( mfg='Hirose', pnum='DF23C-20DS-0.5V(51)', dk='H124690CT-ND' )
+p.Print( 'packages/header2x10s' )
+      
+# Hirose 20 pin plug connector
+p = Header()
+p.Create( N=20, pinW=mm(.25), pinL=mm(1.0), rows=2, L=mm(6.5), W=mm(3.1), pitch=mm(.5), padExt=mm(4.9), exact=True, smt=True, bottom=True );
+p.Info( mfg='Hirose', pnum='DF23C-20DP-0.5V(92)', dk='H124749CT-ND' )
+p.Print( 'packages/header2x10p' )
+      
+# Board spacer
+p = Part('MH1')
+pi = PadInfo( pinW=mm(5.3), pinL=mm(5.3), exact=True, round=True )
+p.pins.append( Pad( n=-1, hor=False, x=0, y=0, info=pi, round=True ));
+pi = PinInfo( pinW=mm(3), plated=0, exact=True )
+p.pins.append( Pin( n=-1, x=0, y=0, info=pi ) );
+p.Info( mfg='Wurth', pnum='9774015243R', dk='732-7069-1-ND' );
+p.Print( 'packages/spacer' );
+
+# BMP280 - Alternative pressure sensor
+#          Note that the pin numbers are mirror image from normal just like the MPR pressure sensor
+#          Don't know what the deal is with these sensors, but I've added support to it to my Footprint library!
+p = RectPart()
+p.Create( N=8, W=mm(2), L=mm(2.5), pitch=mm(.65), pinW=mm(.35), pinL=mm(0.5), rowD=mm(1.1+0.5), exact=True, outline="BOX", mirror=True )
+p.Info( pnum='BMP280', mfg='Bosch', dk='828-1064-1-ND' )
+p.Print( 'packages/BMP280' )
+
